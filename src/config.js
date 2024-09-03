@@ -1,3 +1,5 @@
+// config.js
+require('dotenv').config();
 
-export const TOKEN_SECRET = '1006463424';
-export const OPENAI_API_KEY = proccess.env.TOKEN_OPENAI;
+export const TOKEN_SECRET = process.env.CLAVE_SECRETA;
+export const OPENAI_API_KEY = process.env.TOKEN_OPENAI;
