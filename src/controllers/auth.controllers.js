@@ -3,7 +3,7 @@ import Teacher from '../models/teacher.model.js';
 import bcrypt from "bcryptjs";
 import { createAccessToken } from '../libs/jwt.js';
 import jwt from 'jsonwebtoken';
-import { TOKEN_SECRET } from  '../config.js';
+
 
 // Función para registrar usuarios o profesores
 export const registerUserOrTeacher = async (req, res) => {
@@ -77,7 +77,7 @@ export const loginUserOrTeacher = async (req, res) => {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
 
-    const token = jwt.sign({ id: user._id, role }, TOKEN_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id, role }, process.env.CLAVE_SECRETA, { expiresIn: '1h' });
     res.cookie('token', token, { httpOnly: false, secure: false });
 
     return res.json({
@@ -140,7 +140,7 @@ export const verifyToken = async (req, res) => {
       return res.status(401).json({ message: "No hay token, no estás autorizado" });
     }
 
-    jwt.verify(token, TOKEN_SECRET, async (err, decoded) => {
+    jwt.verify(token, process.env.CLAVE_SECRETA, async (err, decoded) => {
       if (err) {
         return res.status(402).json({ message: "No estás autorizado" });
       }

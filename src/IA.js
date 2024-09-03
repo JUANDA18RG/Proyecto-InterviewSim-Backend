@@ -1,4 +1,4 @@
-import { OPENAI_API_KEY } from './config.js';
+
 import OpenAI from 'openai';
 
 async function IA({title, description,Dificultad}) {
@@ -16,7 +16,7 @@ async function IA({title, description,Dificultad}) {
     
     
 
-    const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.TOKEN_OPENAI });
     const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: message,

@@ -4,6 +4,9 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import usuario from "./routes/auth.routes.js"; 
 import interview from "./routes/interwiew.routes.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 
 const app = express();
