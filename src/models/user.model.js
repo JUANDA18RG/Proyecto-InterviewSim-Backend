@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    calificacionesEntrevistas: {
+      type: [String],
+      required: false,
+      default: [], 
+    },
   },
   {
     timestamps: true,

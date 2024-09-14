@@ -206,3 +206,60 @@ export const DeleteUser = async (req, res) => {
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
+
+// Función para obtener las calificaciones de un usuario
+export const getGrades = async (req, res) => {
+  const { id, role } = req.user;
+  try {
+    if (!id || !role) {
+      return res.status(400).json({ message: "ID o rol faltante" });
+    }
+
+    let Model;
+    if (role === 'student') {
+      Model = User;
+    } else {
+      return res.status(400).json({ message: "Rol inválido" });
+    }
+
+    const user = await Model.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    const calificaciones = user.calificacionesEntrevistas || [];
+
+    // Enviar las calificaciones de vuelta al frontend
+    return res.status(200).json({ calificaciones });
+  } catch (error) {
+    console.error('Error al obtener las calificaciones:', error);
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+}
+
+// Función paraobtener las calificaciones de un profesor
+export const getAccionTeacher = async (req, res) => {
+  const { id, role } = req.user;
+  try {
+    if (!id || !role) {
+      return res.status(400).json({ message: "ID o rol faltante" });
+    }
+
+    if (role !== 'teacher') {
+      return res.status(400).json({ message: "Rol inválido" });
+    }
+
+    const teacher = await Teacher.findById(id);
+    if (!teacher) {
+      return res.status(404).json({ message: "Profesor no encontrado" });
+    }
+
+    const acciones = teacher.accionesEntrevistasTeacher || [];
+
+    // Enviar las acciones de vuelta al frontend
+    return res.status(200).json({ acciones });
+  } catch (error) {
+    console.error('Error al obtener las acciones:', error);
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+}

@@ -15,6 +15,11 @@ const teacherSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    accionesEntrevistasTeacher: {
+      type: [String],
+      required: false,
+      default: [], 
+    },
   },
   {
     timestamps: true, 

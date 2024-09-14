@@ -28,7 +28,12 @@ const interviewSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
+    
+    tipoEntrevista: {
+      type: String,
+      enum: ["opcionMultiple", "programacion"],
+      required: true,
+    },
   },
   {
     timestamps: true,

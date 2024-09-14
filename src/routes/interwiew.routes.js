@@ -1,14 +1,20 @@
 import { Router } from "express";
 import {
- createInterview,getInterviews,getInterviewById
+ createInterview,getInterviews,getInterviewById,getInterviewsByTeacher,deleteInterviewById,calificarEntrevista,obtenerRecomendaciones,mostrarInfo
 } from "../controllers/interview.controllers.js";
-import IA from "../IA.js";
+import {auth} from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.post("/createInterview", createInterview);
-router.get("/allIterview", getInterviews);
-router.get("/interview/:id", getInterviewById);
+router.post("/createInterview", auth,createInterview);
+router.get("/allIterview", auth,getInterviews);
+router.get("/interview/:id",auth, getInterviewById);
+router.get("/interviewTeacher/:id", auth,getInterviewsByTeacher);
+router.delete("/deleteInterview/:id", auth,deleteInterviewById);
+router.post("/calificar", auth,calificarEntrevista);
+router.post("/recomendaciones", auth,obtenerRecomendaciones);
+router.get("/Info", auth,mostrarInfo);
+
 
 
 
