@@ -5,12 +5,13 @@ import cookieParser from "cookie-parser";
 import usuario from "./routes/auth.routes.js"; 
 import interview from "./routes/interwiew.routes.js";
 import dotenv from "dotenv";
+import compression  from "compression";
 
 dotenv.config();
 
 
 const app = express();
-
+app.use(compression());
 app.use(
   cors({
     credentials: true,
