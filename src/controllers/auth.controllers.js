@@ -69,7 +69,7 @@ export const loginUserOrTeacher = async (req, res) => {
     user = await Model.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: `${role.charAt(0).toUpperCase() + role.slice(1)} no encontrado` });
+      return res.status(403).json({ message: `${role.charAt(0).toUpperCase() + role.slice(1)} no encontrado` });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

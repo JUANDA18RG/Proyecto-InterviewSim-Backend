@@ -1,9 +1,10 @@
 import Interview from '../models/interview.model.js';
-import IA from '../IA.js';
+import IA from '../IA/IA.js';
 import User from '../models/user.model.js';
 import Teacher from '../models/teacher.model.js';
-import IARecomendacionEntrevista from '../IARecomendacionEntrevista.js';
-import IAInfo from '../IAInfoTiempoReal.js';
+import IARecomendacionEntrevista from '../IA/IARecomendacionEntrevista.js';
+import IAInfo from '../IA/IAInfoTiempoReal.js';
+import IARecomendacionesCalificacionesProgramacion from '../IA/IARecomendacionesCalificacionProgramacion.js';
 
 //crear entrevista
 export const createInterview = async (req, res) => {
@@ -184,3 +185,32 @@ export const mostrarInfo = async (req, res) => {
         res.status(500).json({ message: "Error al obtener información de la IA", error: error.message });
     }
 };
+
+export const CalificacionRecomendacionProgramacion = async (req, res) => {
+    console.log("Datos recibidos:", req.body); // Log para ver los datos
+
+    const { pregunta, respuestaUser, respuestaEsperada } = req.body;
+
+    try {
+        // Validar que los parámetros necesarios estén presentes
+        if (!pregunta || !respuestaUser || !respuestaEsperada) {
+            return res.status(400).json({ message: "Faltan parámetros necesarios en la solicitud" });
+        }
+
+        // Llamar a la función que obtiene la calificación y recomendación
+        const { calificacion, recomendacion } = await IARecomendacionesCalificacionesProgramacion({
+            pregunta,
+            respuestaUser,
+            respuestaEsperada,
+        });
+
+        // Devolver tanto la calificación como la recomendación
+        res.status(200).json({ calificacion, recomendacion });
+    } catch (error) {
+        console.error("Error en el punto de calificar y recomendar al usuario", error);
+        res.status(500).json({ message: "Error en la respuesta de la IA" });
+    }
+};
+
+
+
