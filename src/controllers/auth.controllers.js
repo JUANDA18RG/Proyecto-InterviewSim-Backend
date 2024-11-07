@@ -78,8 +78,7 @@ export const loginUserOrTeacher = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id, role }, process.env.CLAVE_SECRETA, { expiresIn: '1h' });
-    res.cookie('token', token, { httpOnly: false, secure: false });
-
+    
     return res.json({
       message: "Inicio de sesión exitoso",
       id: user._id,
@@ -87,6 +86,7 @@ export const loginUserOrTeacher = async (req, res) => {
       email: user.email,
       date: user.createdAt,
       role: role,
+      tokenSession: token,
     });
   } catch (error) {
     console.error('Error en el inicio de sesión:', error);

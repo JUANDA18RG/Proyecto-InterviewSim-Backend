@@ -13,7 +13,7 @@ const app = express();
 app.use(compression());
 app.use(
   cors({
-    origin: process.env.PERMISSION_FRONTEND || "http://localhost:4000", 
+    origin:'*',
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })

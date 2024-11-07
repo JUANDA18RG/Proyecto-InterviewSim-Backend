@@ -2,19 +2,19 @@
 FROM node:18
 
 # Crear y establecer el directorio de trabajo en el contenedor
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copiar los archivos de package.json y package-lock.json (o yarn.lock)
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Instalar las dependencias
 RUN npm install
 
-# Copiar el resto del código de la aplicación
+# Copiar el resto de los archivos del proyecto
 COPY . .
 
-# Exponer el puerto en el que se ejecuta el backend (ejemplo: 3000)
-EXPOSE 3000
+# Exponer el puerto en el que se ejecuta el backend (ejemplo: 8000)
+EXPOSE 8000
 
 # Comando para iniciar la aplicación
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
