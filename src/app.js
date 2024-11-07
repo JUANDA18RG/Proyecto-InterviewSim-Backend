@@ -13,7 +13,7 @@ const app = express();
 app.use(compression());
 app.use(
   cors({
-    origin:'*',
+    origin: process.env.PERMISSION_FRONTEND,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
