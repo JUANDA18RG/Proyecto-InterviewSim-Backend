@@ -16,6 +16,7 @@ app.use(
     origin: process.env.PERMISSION_FRONTEND,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 app.use(express.json());
