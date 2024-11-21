@@ -14,7 +14,7 @@ const app = express();
 app.use(compression());
 app.use(
   cors({
-    origin: ["https://proyecto-interviewsim.onrender.com"]
+    origin: ["https://proyecto-interviewsim.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
