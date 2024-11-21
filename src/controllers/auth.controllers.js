@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 import { createAccessToken } from '../libs/jwt.js';
 import jwt from 'jsonwebtoken';
 
-
 // Función para registrar usuarios o profesores
 export const registerUserOrTeacher = async (req, res) => {
   const { email, password, userName, role } = req.body;
@@ -37,7 +36,7 @@ export const registerUserOrTeacher = async (req, res) => {
 
     const userSaved = await newUser.save();
     const token = await createAccessToken({ id: userSaved._id, role });
-    res.cookie('token', token, { httpOnly: false, secure: false });
+    res.cookie('token', token, { httpOnly: true, secure: true });
     res.json({
       id: userSaved._id,
       userName: userSaved.userName,
@@ -78,6 +77,7 @@ export const loginUserOrTeacher = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id, role }, process.env.CLAVE_SECRETA, { expiresIn: '1h' });
+    res.cookie('token', token, { httpOnly: true, secure: true });
     
     return res.json({
       message: "Inicio de sesión exitoso",
@@ -98,7 +98,8 @@ export const loginUserOrTeacher = async (req, res) => {
 export const logout = async (req, res) => {
   res.cookie("token", "", {
     expires: new Date(0),
-    httpOnly: false,
+    httpOnly: true,
+    secure: true,
   });
   return res.sendStatus(200);
 };
@@ -131,10 +132,10 @@ export const profile = async (req, res) => {
   }
 };
 
-//funcion para verificar el token
+// Función para verificar el token
 export const verifyToken = async (req, res) => {
   try {
-    const { token } = req.cookies;
+    const token = req.cookies.token;
 
     if (!token) {
       return res.status(401).json({ message: "No hay token, no estás autorizado" });
@@ -237,7 +238,7 @@ export const getGrades = async (req, res) => {
   }
 }
 
-// Función paraobtener las calificaciones de un profesor
+// Función para obtener las calificaciones de un profesor
 export const getAccionTeacher = async (req, res) => {
   const { id, role } = req.user;
   try {
