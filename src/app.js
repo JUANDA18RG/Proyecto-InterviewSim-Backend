@@ -14,7 +14,7 @@ const app = express();
 app.use(compression());
 app.use(
   cors({
-    origin: "https://proyecto-interviewsim.onrender.com",
+    origin: ["https://proyecto-interviewsim.onrender.com"]
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -23,22 +23,6 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
-
-// Middleware para asegurarse de que las cabeceras CORS se envíen correctamente
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://proyecto-interviewsim.onrender.com");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
-// Manejo de solicitudes OPTIONS
-app.options('*', cors({
-  origin: "https://proyecto-interviewsim.onrender.com",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
 
 // Asegúrate de que las rutas estén correctamente configuradas en los archivos auth.routes.js e interwiew.routes.js
 app.use("/api", usuario);
@@ -50,12 +34,6 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-});
-
-// Middleware de manejo de errores
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
 });
 
 export default app;
