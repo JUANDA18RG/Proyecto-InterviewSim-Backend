@@ -22,8 +22,8 @@ app.use(cookieParser());
 
 // Configuración de CORS
 const allowedOrigins = isProduction
-  ? ["https://proyecto-interviewsim.onrender.com" , "true"]
-  : ["http://localhost:4000" , "true"];
+  ? ["https://proyecto-interviewsim.onrender.com"]
+  : ["http://localhost:4000"];
 
   app.use(
     cors({
