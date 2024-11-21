@@ -14,7 +14,7 @@ const app = express();
 app.use(compression());
 app.use(
   cors({
-    origin: process.env.PERMISSION_FRONTEND || "https://proyecto-interviewsim.onrender.com",
+    origin: "*" || "https://proyecto-interviewsim.onrender.com",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -34,6 +34,12 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
+// Middleware de manejo de errores
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 export default app;
