@@ -12,6 +12,7 @@ dotenv.config();
 
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
+console.log("isProduction", isProduction);
 
 // Middleware
 app.use(compression());
@@ -24,20 +25,22 @@ const allowedOrigins = isProduction
   ? ["https://proyecto-interviewsim.onrender.com"]
   : ["http://localhost:4000"];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Origen no permitido por CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        console.log("Solicitud de origen:", origin);
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          console.error("Origen no permitido por CORS:", origin);
+          callback(new Error("Origen no permitido por CORS"));
+        }
+      },
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization"],
+    })
+  );
 
 // Rutas
 app.use("/api", usuario);
