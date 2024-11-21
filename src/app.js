@@ -11,29 +11,54 @@ import path from "path";
 dotenv.config();
 
 const app = express();
+const isProduction = process.env.NODE_ENV === "production";
+
+// Middleware
 app.use(compression());
-app.use(
-  cors({
-    origin: ["https://proyecto-interviewsim.onrender.com"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
 
-// Asegúrate de que las rutas estén correctamente configuradas en los archivos auth.routes.js e interwiew.routes.js
+// Configuración de CORS
+const allowedOrigins = isProduction
+  ? ["https://proyecto-interviewsim.onrender.com"]
+  : ["http://localhost:4000"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Origen no permitido por CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Rutas
 app.use("/api", usuario);
 app.use("/interview", interview);
 
-// Sirve archivos estáticos si estás usando una aplicación frontend como React
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, 'client/build')));
+// Archivos estáticos (solo en producción)
+if (isProduction) {
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "client/build")));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client/build", "index.html"));
+  });
+}
+
+// Manejo global de errores
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || "Error interno del servidor",
+  });
 });
 
 export default app;
