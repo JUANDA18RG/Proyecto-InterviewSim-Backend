@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 // Configuración de CORS
 const allowedOrigins = isProduction
-  ? ["https://proyecto-interviewsim.onrender.com"]
+  ? ["https://proyecto-interviewsim.onrender.com", "https://poryectowwwinterviewsim-180808156072.us-central1.run.app"]
   : ["http://localhost:4000"];
 
   app.use(
