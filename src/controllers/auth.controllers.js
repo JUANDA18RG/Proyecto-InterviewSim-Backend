@@ -65,21 +65,42 @@ export const loginUserOrTeacher = async (req, res) => {
       return res.status(400).json({ message: "Rol inválido" });
     }
 
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Faltan credenciales: email o password",
+        error: true,
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: "La contraseña debe tener al menos 6 caracteres",
+        error: true,
+      });
+    }
+
     user = await Model.findOne({ email });
 
     if (!user) {
-      return res.status(403).json({ message: `${role.charAt(0).toUpperCase() + role.slice(1)} no encontrado` });
+      return res.status(404).json({
+        message: `${role.charAt(0).toUpperCase() + role.slice(1)} no encontrado`,
+        error: true,
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Contraseña incorrecta" });
+      return res.status(401).json({
+        message: "Contraseña incorrecta",
+        error: true,
+      });
     }
 
-    const token = jwt.sign({ id: user._id, role }, process.env.CLAVE_SECRETA, { expiresIn: '1h' });
-    res.cookie('token', token, { httpOnly: true, secure: true });
-    
+    const token = jwt.sign({ id: user._id, role }, process.env.CLAVE_SECRETA, { expiresIn: "1h" });
+    res.cookie("token", token, { httpOnly: true, secure: true });
+
     return res.json({
+      error: false,
       message: "Inicio de sesión exitoso",
       id: user._id,
       userName: user.userName,
@@ -89,7 +110,7 @@ export const loginUserOrTeacher = async (req, res) => {
       tokenSession: token,
     });
   } catch (error) {
-    console.error('Error en el inicio de sesión:', error);
+    console.error("Error en el inicio de sesión:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
@@ -143,7 +164,10 @@ export const verifyToken = async (req, res) => {
 
     jwt.verify(token, process.env.CLAVE_SECRETA, async (err, decoded) => {
       if (err) {
-        return res.status(402).json({ message: "No estás autorizado" });
+        return {
+          message: "Token inválido",
+          error: true,
+        }
       }
 
       const { id, role } = decoded;

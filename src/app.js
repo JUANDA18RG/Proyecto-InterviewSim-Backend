@@ -11,7 +11,7 @@ import path from "path";
 dotenv.config();
 
 const app = express();
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === "development";
 console.log("isProduction", isProduction);
 
 // Middleware
@@ -22,8 +22,8 @@ app.use(cookieParser());
 
 // Configuración de CORS
 const allowedOrigins = isProduction
-  ? ["https://proyecto-interviewsim.onrender.com", "https://poryectowwwinterviewsim-180808156072.us-central1.run.app"]
-  : ["http://localhost:4000"];
+  ? ["http://localhost:4000"]
+  : ["https://proyecto-interviewsim.onrender.com", "https://poryectowwwinterviewsim-180808156072.us-central1.run.app"]
 
   app.use(
     cors({
