@@ -174,15 +174,22 @@ export const obtenerRecomendaciones = async (req, res) => {
 export const mostrarInfo = async (req, res) => {
     try {
         const info = await IAInfo();
+        console.log("Respuesta de IAInfo:", JSON.stringify(info, null, 2));
 
-        if (!info || !info.data || !Array.isArray(info.data)) {
+        // Validar que la respuesta tenga la estructura esperada
+        if (!info || !info.info || !Array.isArray(info.info.data)) {
+            console.error("Respuesta de IAInfo no válida:", JSON.stringify(info, null, 2));
             return res.status(500).json({ message: "Formato incorrecto de la respuesta de la IA" });
         }
 
-        res.status(200).json({ info });
+        // Ajustar la estructura para evitar la clave `info` duplicada
+        res.status(200).json(info.info); // Enviar solo el contenido de `info`
     } catch (error) {
-        console.error('Error al obtener información de la IA:', error);
-        res.status(500).json({ message: "Error al obtener información de la IA", error: error.message });
+        console.error("Error al obtener información de la IA:", error);
+        res.status(500).json({
+            message: "Error al obtener información de la IA",
+            error: error.message,
+        });
     }
 };
 
