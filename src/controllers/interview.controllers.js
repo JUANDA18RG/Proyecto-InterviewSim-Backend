@@ -5,6 +5,36 @@ import Teacher from '../models/teacher.model.js';
 import IARecomendacionEntrevista from '../IA/IARecomendacionEntrevista.js';
 import IAInfo from '../IA/IAInfoTiempoReal.js';
 import IARecomendacionesCalificacionesProgramacion from '../IA/IARecomendacionesCalificacionProgramacion.js';
+import nodemailer from 'nodemailer';
+import GenerarCalificacionesHTML from '../utils/generadorCalificaciones.js';
+
+//enviar correo de calificaciones
+export const enviarResultadosPorCorreo = async (email, calificacion, recomendacion) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const htmlContent = GenerarCalificacionesHTML(calificacion, recomendacion);
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Resultados de tu prueba',
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Correo enviado con éxito');
+  } catch (error) {
+    console.error('Error al enviar el correo:', error);
+  }
+};
+
 
 //crear entrevista
 export const createInterview = async (req, res) => {
@@ -113,45 +143,64 @@ export const deleteInterviewById = async (req, res) => {
 
 //Calificar entrevista
 export const calificarEntrevista = async (req, res) => {
-    const { respuestaIA, respuestaUser, userID, nombreEntrevista, dificultad } = req.body;
-    console.log("respuestas de la entrevista: ", respuestaIA, respuestaUser, userID);
+  const { respuestaIA, respuestaUser, userID, nombreEntrevista, dificultad, email } = req.body;
 
-    // Inicializar el puntaje
-    let score = 0;
+  // Inicializar el puntaje
+  let score = 0;
 
-    // Recorrer las respuestas del usuario y las respuestas correctas
-    respuestaUser.forEach((respuesta, index) => {
-        if (respuesta === respuestaIA[index]) {
-            score++;
-        }
+  // Calcular el puntaje
+  respuestaUser.forEach((respuesta, index) => {
+    if (respuesta === respuestaIA[index]) {
+      score++;
+    }
+  });
+
+  // Crear descripción de la calificación
+  const calificacionDescripcion = `Obtuviste ${score} de ${respuestaIA.length} en la entrevista "${nombreEntrevista}" con una dificultad de "${dificultad}". ¡Sigue así y continúa mejorando!`;
+
+  try {
+    const user = await User.findById(userID);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Inicializar calificacionesEntrevistas si no está definido
+    if (!user.calificacionesEntrevistas) {
+      user.calificacionesEntrevistas = [];
+    }
+
+    // Agregar la nueva calificación
+    user.calificacionesEntrevistas.push(calificacionDescripcion);
+    await user.save();
+
+    // Generar recomendaciones usando IA
+    const recomendacionesRaw = await IARecomendacionEntrevista({
+      Preguntas: respuestaIA,
+      Respuestas: respuestaUser,
+      RespuestasCorrectas: respuestaIA,
     });
 
-    // Construir la cadena descriptiva de la calificación
-    const calificacionDescripcion = `Obtuviste ${score} de ${respuestaIA.length} en la entrevista "${nombreEntrevista}" con una dificultad de "${dificultad}". ¡Sigue así y continúa mejorando!`;
+    // Transformar las recomendaciones en un formato más claro
+    const recomendaciones = recomendacionesRaw.recommendations.map((rec) => {
+      return `Pregunta: ${rec.question} - Recomendación: ${rec.recommendation}`;
+    });
 
-    try {
-        const user = await User.findById(userID);
-        if (!user) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
-        }
+    console.log('Recomendaciones procesadas:', recomendaciones);
 
-        // Inicializar calificacionesEntrevistas si no está definido
-        if (!user.calificacionesEntrevistas) {
-            user.calificacionesEntrevistas = [];
-        }
+    // Enviar resultados por correo
+    await enviarResultadosPorCorreo(email, calificacionDescripcion, recomendaciones);
 
-        // Agregar la nueva calificación
-        user.calificacionesEntrevistas.push(calificacionDescripcion);
-        await user.save();
-
-        //enviar recomendaciones de fallas en la entrevista
-
-        // Enviar el puntaje de vuelta al frontend
-        res.status(200).json({ message: "Calificación completada", score, total: respuestaIA.length });
-    } catch (error) {
-        console.error('Error al guardar la calificación:', error);
-        res.status(500).json({ message: "Error al guardar la calificación" });
-    }
+    // Enviar respuesta al frontend
+    res.status(200).json({
+      message: "Calificación completada",
+      score,
+      total: respuestaIA.length,
+      recomendaciones,
+    });
+  } catch (error) {
+    console.error('Error al guardar la calificación:', error);
+    res.status(500).json({ message: "Error al guardar la calificación" });
+  }
 };
 
 
