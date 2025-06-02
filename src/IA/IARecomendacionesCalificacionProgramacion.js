@@ -30,9 +30,9 @@ async function IARecomendacionesCalificacionesProgramacion({ pregunta, respuesta
 
     try {
         const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4.1",
             messages: message,
-            max_tokens: 2000,  // Aumentar el límite de tokens
+            max_tokens: 2000, 
         });
 
         const responseContent = completion.choices[0].message.content.trim();

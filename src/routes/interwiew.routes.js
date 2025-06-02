@@ -7,7 +7,7 @@ import {auth} from '../middlewares/auth.middleware.js';
 const router = Router();
 
 router.post("/createInterview", auth,createInterview);
-router.get("/allIterview", auth,getInterviews);
+router.get("/interviews", auth, getInterviews);
 router.get("/interview/:id",auth, getInterviewById);
 router.get("/interviewTeacher/:id", auth,getInterviewsByTeacher);
 router.delete("/deleteInterview/:id", auth,deleteInterviewById);

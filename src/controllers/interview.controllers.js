@@ -87,14 +87,27 @@ export const createInterview = async (req, res) => {
 //traer todas las entrevistas
 export const getInterviews = async (req, res) => {
     try {
-        const interviews = await Interview.find();
+        // Obtener los parámetros de consulta
+        const { programming, difficulty } = req.query;
+
+        // Crear un objeto de filtro dinámico
+        const filter = {};
+        if (programming) {
+            filter.tipoEntrevista = programming; 
+        }
+        if (difficulty) {
+            filter.Dificultad = difficulty; 
+        }
+
+        // Buscar entrevistas con los filtros aplicados
+        const interviews = await Interview.find(filter);
+
         res.json(interviews);
     } catch (error) {
         console.error('Error al obtener entrevistas:', error);
         res.status(500).json({ message: error.message });
     }
 };
-
 
 //traer entrevista por id
 export const getInterviewById = async (req, res) => {
