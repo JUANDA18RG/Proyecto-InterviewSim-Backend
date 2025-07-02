@@ -34,6 +34,12 @@ const interviewSchema = new mongoose.Schema(
       enum: ["opcionMultiple", "programacion"],
       required: true,
     },
+
+    numeroEntrevistados: {
+      type: Number,
+      default: 0,
+    },
+
   },
   {
     timestamps: true,

@@ -203,7 +203,14 @@ export const calificarEntrevista = async (req, res) => {
     // Enviar resultados por correo
     await enviarResultadosPorCorreo(email, calificacionDescripcion, recomendaciones);
 
+    // sumar numero de entrevistas hechas 
+      await Interview.findOneAndUpdate(
+        { title: nombreEntrevista }, 
+        { $inc: { numeroEntrevistados: 1 } }
+      );
+
     // Enviar respuesta al frontend
+    
     res.status(200).json({
       message: "Calificación completada",
       score,
